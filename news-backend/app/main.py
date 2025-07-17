@@ -117,6 +117,43 @@ def get_news_related_image(title: str) -> str:
     else:
         return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop"  # 一般的な経済ニュース
 
+def get_news_category(title: str) -> str:
+    """Determine news category based on title content"""
+    title_lower = title.lower()
+    
+    if any(keyword in title_lower for keyword in ['野球', 'サッカー', 'テニス', 'ゴルフ', '相撲', 'スポーツ', '横綱', '選手', '試合', '勝利', '敗北', 'プロ野球', 'jリーグ', 'オリンピック', '大会', '競技']):
+        return "スポーツ"
+    
+    elif any(keyword in title_lower for keyword in ['政治', '政府', '首相', '大臣', '国会', '選挙', '政策', '法案', '議員', '党', '内閣', '官房']):
+        return "政治"
+    
+    elif any(keyword in title_lower for keyword in ['中国', '韓国', 'アメリカ', 'ロシア', '北朝鮮', '台湾', '外交', '国際', '大使', '首脳', '会談', '条約', '貿易摩擦']):
+        return "国際"
+    
+    elif any(keyword in title_lower for keyword in ['ai', '人工知能', 'it', 'テクノロジー', 'デジタル', 'ソフトウェア', 'アプリ', 'システム', 'ネット', 'インターネット', 'スマホ', 'コンピュータ']):
+        return "テクノロジー"
+    
+    elif any(keyword in title_lower for keyword in ['社会', '事件', '事故', '災害', '地震', '台風', '火災', '犯罪', '逮捕', '裁判', '判決', '宗教', '僧侶', '寺院']):
+        return "社会"
+    
+    elif any(keyword in title_lower for keyword in ['医療', '病院', '薬', '治療', '患者', '医師', '看護', '健康', 'ワクチン', '感染', 'コロナ', '新型', 'インフルエンザ']):
+        return "医療"
+    
+    elif any(keyword in title_lower for keyword in ['環境', '気候', '温暖化', '科学', '研究', '実験', '発見', '宇宙', '原発', '核', '平和', '原爆']):
+        return "科学・環境"
+    
+    elif any(keyword in title_lower for keyword in ['芸能', '映画', '音楽', 'テレビ', 'ドラマ', 'アニメ', '俳優', '歌手', 'タレント', 'アイドル', 'コンサート']):
+        return "エンタメ"
+    
+    elif any(keyword in title_lower for keyword in ['交通', '電車', '新幹線', '航空', '空港', '道路', '自動車', 'バス', '運輸', '鉄道']):
+        return "交通"
+    
+    elif any(keyword in title_lower for keyword in ['教育', '学校', '大学', '学生', '入試', '受験', '授業', '教師', '先生', '学習']):
+        return "教育"
+    
+    else:
+        return "経済"
+
 def generate_mizutani_article() -> NewsItem:
     """Generate a fictional article about M谷"""
     is_gossip = random.randint(1, 3) == 1
@@ -218,6 +255,8 @@ def fetch_rss_news() -> List[NewsItem]:
                         if len(summary) > 260:
                             summary = summary[:257] + "..."
                 
+                category = get_news_category(title)
+                
                 news_item = NewsItem(
                     title=title,
                     summary=summary,
@@ -225,7 +264,7 @@ def fetch_rss_news() -> List[NewsItem]:
                     source=source,
                     url=entry.get('link', ''),
                     image_url=get_news_related_image(title),
-                    category="経済"
+                    category=category
                 )
                 news_items.append(news_item)
                 
