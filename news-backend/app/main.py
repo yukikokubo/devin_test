@@ -149,7 +149,7 @@ def generate_mizutani_article() -> NewsItem:
     title = random.choice(titles)
     summary = random.choice(summaries)
     
-    if len(summary) > 300:
+    if len(summary) > 280:
         sentences = summary.split('。')
         truncated = ""
         for sentence in sentences:
@@ -157,23 +157,15 @@ def generate_mizutani_article() -> NewsItem:
                 truncated += sentence + '。'
             else:
                 break
-        if truncated and len(truncated) > 100:
+        if truncated and len(truncated) > 150:
             summary = truncated
         else:
-            words = summary[:280].split()
-            summary = ' '.join(words[:-1]) if len(words) > 1 else summary[:280]
-    elif len(summary) < 200:
-        additional_context = "M谷氏は学生時代にハンドボールで活躍し、現在も地域スポーツの振興に積極的に取り組んでいます。プロレス観戦が趣味で、地域コミュニティでも人気の高い人物として知られています。"
-        summary += additional_context
-        if len(summary) > 300:
-            sentences = summary.split('。')
-            truncated = ""
-            for sentence in sentences:
-                if len(truncated + sentence + '。') <= 280:
-                    truncated += sentence + '。'
+            if len(summary) > 280:
+                last_space = summary[:280].rfind(' ')
+                if last_space > 200:
+                    summary = summary[:last_space] + "。"
                 else:
-                    break
-            summary = truncated if truncated else summary[:280]
+                    summary = summary[:280]
     
     return NewsItem(
         title=title,
