@@ -35,18 +35,33 @@ class NewsResponse(BaseModel):
     overall_summary: str
 
 def get_news_related_image(title: str) -> str:
-    """Get a relevant image URL based on news title"""
+    """Get a relevant image URL based on news title with enhanced keyword matching"""
     title_lower = title.lower()
     
     if any(keyword in title_lower for keyword in ['m谷', 'mizutani', 'cro']):
-        if any(keyword in title_lower for keyword in ['ゴシップ', '口論', '騒動', '疑惑', '小競り合い']):
+        if any(keyword in title_lower for keyword in ['ゴシップ', '口論', '騒動', '疑惑', '小競り合い', '問題']):
             return "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop"  # 議論・問題
-        elif any(keyword in title_lower for keyword in ['プロレス', '講演', 'スポーツ']):
+        elif any(keyword in title_lower for keyword in ['プロレス', '講演', 'スポーツ', 'イベント']):
             return "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"  # スポーツ・イベント
         else:
             return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop"  # ビジネスマン
     
-    elif any(keyword in title_lower for keyword in ['株価', '株式', '投資', '市場', '日経', 'ダウ', '証券']):
+    elif any(keyword in title_lower for keyword in ['中国', '日本産', '輸入', '許可', '水産物', 'マグロ', 'ホタテ', '貿易']):
+        return "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop"  # 魚・水産物
+    
+    elif any(keyword in title_lower for keyword in ['広島', '核実験', 'カザフスタン', '知事', '平和', '核']):
+        return "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"  # 平和・記念碑
+    
+    elif any(keyword in title_lower for keyword in ['タイ', '僧侶', '性的', '金銭', '脅し', '宗教', '社会']):
+        return "https://images.unsplash.com/photo-1563789031959-4c02bcb41319?w=400&h=300&fit=crop"  # 寺院・宗教
+    
+    elif any(keyword in title_lower for keyword in ['相撲', '横綱', '大の里', '名古屋場所', 'スポーツ']):
+        return "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"  # スポーツ
+    
+    elif any(keyword in title_lower for keyword in ['クマ', '目撃', 'ゴルフ', '無観客', '野生動物', '宮城', '富谷']):
+        return "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop"  # ゴルフ場
+    
+    elif any(keyword in title_lower for keyword in ['株価', '株式', '投資', '市場', '日経', 'ダウ', '証券', 'nikkei']):
         return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop"  # 株式チャート
     
     elif any(keyword in title_lower for keyword in ['マンション', '不動産', '住宅', '建設', '土地']):
@@ -67,7 +82,7 @@ def get_news_related_image(title: str) -> str:
     elif any(keyword in title_lower for keyword in ['エネルギー', '電力', '石油', 'ガス', '原油', '再生可能']):
         return "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop"  # エネルギー
     
-    elif any(keyword in title_lower for keyword in ['製造', '工場', '生産', '輸出', '輸入', '貿易']):
+    elif any(keyword in title_lower for keyword in ['製造', '工場', '生産', '輸出', '輸入']):
         return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop"  # 製造業
     
     elif any(keyword in title_lower for keyword in ['航空', '旅行', '観光', 'ana', 'jal', 'ホテル']):
@@ -156,12 +171,30 @@ def fetch_rss_news() -> List[NewsItem]:
                 title = entry.title
                 summary = entry.get('summary', entry.get('description', ''))
                 
-                if len(summary) > 260:
-                    summary = summary[:257] + "..."
+                if len(summary) > 300:
+                    sentences = summary.split('。')
+                    truncated = ""
+                    for sentence in sentences:
+                        if len(truncated + sentence + '。') <= 280:
+                            truncated += sentence + '。'
+                        else:
+                            break
+                    if truncated and len(truncated) > 100:
+                        summary = truncated
+                    else:
+                        words = summary[:280].split()
+                        summary = ' '.join(words[:-1]) if len(words) > 1 else summary[:280]
                 elif len(summary) < 50:
                     summary = f"{summary} {title}に関する詳細情報です。"
-                    if len(summary) > 260:
-                        summary = summary[:257] + "..."
+                    if len(summary) > 300:
+                        sentences = summary.split('。')
+                        truncated = ""
+                        for sentence in sentences:
+                            if len(truncated + sentence + '。') <= 280:
+                                truncated += sentence + '。'
+                            else:
+                                break
+                        summary = truncated if truncated else summary[:280]
                 
                 news_item = NewsItem(
                     title=title,
