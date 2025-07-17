@@ -156,14 +156,10 @@ def fetch_rss_news() -> List[NewsItem]:
                 
                 if len(summary) > 260:
                     summary = summary[:257] + "..."
-                elif len(summary) < 200:
-                    summary = f"{summary} 詳細な分析と市場への影響について、専門家の見解を交えながら継続的な監視が必要とされています。関連企業の動向にも注目が集まっており、今後の展開が期待されています。投資家や企業関係者にとって重要な指標となる情報を継続的に監視し、タイムリーな報告を心がけています。"
-                
-                while len(summary) < 250:
-                    summary += "市場の変化と企業の対応策について、包括的な情報をお届けします。"
-                
-                if len(summary) > 260:
-                    summary = summary[:257] + "..."
+                elif len(summary) < 50:
+                    summary = f"{summary} {title}に関する詳細情報です。"
+                    if len(summary) > 260:
+                        summary = summary[:257] + "..."
                 
                 news_item = NewsItem(
                     title=title,
@@ -183,21 +179,40 @@ def fetch_rss_news() -> List[NewsItem]:
     return news_items
 
 def generate_overall_summary(news_items: List[NewsItem]) -> str:
-    """Generate a 500-character overall summary"""
+    """Generate a 500-character overall summary based on actual collected news"""
     sources = list(set([item.source for item in news_items]))
     mizutani_count = len([item for item in news_items if "M谷" in item.title])
+    real_news = [item for item in news_items if "M谷" not in item.title]
     
-    summary = f"本日収集した{len(news_items)}件のニュースから、{', '.join(sources)}などの信頼できる情報源より最新の動向をお届けします。"
+    summary = f"本日収集した{len(news_items)}件のニュースをお届けします。"
+    
+    if real_news:
+        topics = []
+        for item in real_news[:3]:
+            if any(keyword in item.title for keyword in ['セブン', 'コンビニ', '小売']):
+                topics.append("小売業界")
+            elif any(keyword in item.title for keyword in ['マンション', '不動産']):
+                topics.append("不動産市場")
+            elif any(keyword in item.title for keyword in ['株価', '投資']):
+                topics.append("株式市場")
+            elif any(keyword in item.title for keyword in ['企業', '業績']):
+                topics.append("企業業績")
+            else:
+                topics.append("経済動向")
+        
+        if topics:
+            unique_topics = list(set(topics))
+            summary += f"主要トピックは{', '.join(unique_topics[:2])}などです。"
     
     if mizutani_count > 0:
-        summary += f"注目の人物としてM谷氏の動向も含まれており、"
+        summary += f"また、注目の人物M谷氏の動向も含まれています。"
     
-    summary += "市場分析では、企業業績の好調さが継続しており、投資家の関心も高まっています。技術革新と企業の成長戦略が市場全体に好影響を与えており、長期的な視点での投資機会が拡大しています。経済指標の改善と企業の積極的な投資姿勢により、今後も持続的な成長が期待されます。グローバル市場との連動性も高まっており、国際的な動向にも注目が必要です。今後も継続的な監視と分析により、最新の情報をお届けしてまいります。"
+    summary += f"情報源は{', '.join(sources)}などの信頼できるメディアからお届けしています。"
     
-    while len(summary) < 480:
-        summary += "市場の変化と企業の対応策について、専門家の見解を交えながら包括的な情報をお届けします。"
+    if len(summary) > 500:
+        summary = summary[:497] + "..."
     
-    return summary[:500]
+    return summary
 
 @app.get("/api/news", response_model=NewsResponse)
 async def get_news():
@@ -208,16 +223,11 @@ async def get_news():
         
         selected_news = rss_news[:5] + [mizutani_article]
         
-        while len(selected_news) < 6:
-            selected_news.append(NewsItem(
-                title=f"経済ニュース {len(selected_news) + 1}",
-                summary="最新の経済動向について詳細な分析を行っています。市場の変化と企業の対応策について、専門家の見解を交えながら包括的な情報をお届けします。投資家や企業関係者にとって重要な指標となる情報を継続的に監視し、タイムリーな報告を心がけています。今後の展開にも注目が集まっており、関連する動向について引き続き追跡してまいります。",
-                published=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                source="経済レポート",
-                url="https://example.com/economic-news",
-                image_url=get_news_related_image("経済"),
-                category="経済"
-            ))
+        if len(selected_news) < 6:
+            remaining_rss = rss_news[5:6]
+            selected_news.extend(remaining_rss)
+        
+        selected_news = selected_news[:6]
         
         overall_summary = generate_overall_summary(selected_news)
         
