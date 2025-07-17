@@ -272,7 +272,7 @@ def generate_mizutani_article() -> NewsItem:
     )
 
 def fetch_rss_news() -> List[NewsItem]:
-    """Fetch news from RSS feeds"""
+    """Fetch news from RSS feeds with randomized selection for variety"""
     rss_feeds = [
         "https://www3.nhk.or.jp/rss/news/cat6.xml",
         "https://www3.nhk.or.jp/rss/news/cat7.xml",
@@ -280,14 +280,18 @@ def fetch_rss_news() -> List[NewsItem]:
         "https://news.yahoo.co.jp/rss/topics/business.xml",
     ]
     
-    news_items = []
+    all_news_items = []
     
     for feed_url in rss_feeds:
         try:
             feed = feedparser.parse(feed_url)
             source = "Yahoo!ニュース" if "yahoo" in feed_url else "NHKニュース"
+            if "nikkei" in feed_url:
+                source = "日経ニュース"
             
-            for entry in feed.entries[:3]:
+            available_entries = feed.entries[:10] if len(feed.entries) >= 10 else feed.entries
+            
+            for entry in available_entries:
                 title = entry.title
                 summary = entry.get('summary', entry.get('description', ''))
                 
@@ -323,13 +327,14 @@ def fetch_rss_news() -> List[NewsItem]:
                     image_url=get_news_related_image(title),
                     category=category
                 )
-                news_items.append(news_item)
+                all_news_items.append(news_item)
                 
         except Exception as e:
             print(f"Error fetching from {feed_url}: {e}")
             continue
     
-    return news_items
+    random.shuffle(all_news_items)
+    return all_news_items
 
 def generate_overall_summary(news_items: List[NewsItem]) -> str:
     """Generate a 500-character overall summary based on actual collected news"""
@@ -382,11 +387,17 @@ async def get_news():
         rss_news = fetch_rss_news()
         mizutani_article = generate_mizutani_article()
         
-        selected_news = rss_news[:5] + [mizutani_article]
+        if len(rss_news) >= 5:
+            selected_rss = random.sample(rss_news, 5)
+        else:
+            selected_rss = rss_news
         
-        if len(selected_news) < 6:
-            remaining_rss = rss_news[5:6]
-            selected_news.extend(remaining_rss)
+        selected_news = selected_rss + [mizutani_article]
+        
+        if len(selected_news) < 6 and len(rss_news) > len(selected_rss):
+            remaining_count = 6 - len(selected_news)
+            remaining_rss = [item for item in rss_news if item not in selected_rss]
+            selected_news.extend(remaining_rss[:remaining_count])
         
         selected_news = selected_news[:6]
         
