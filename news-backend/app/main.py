@@ -272,28 +272,33 @@ def generate_mizutani_article() -> NewsItem:
     )
 
 def fetch_rss_news() -> List[NewsItem]:
-    """Fetch news from RSS feeds with randomized selection for variety"""
-    rss_feeds = [
+    """Fetch news from RSS feeds with NHK news prioritized"""
+    priority_feeds = [
         "https://www3.nhk.or.jp/rss/news/cat6.xml",
         "https://www3.nhk.or.jp/rss/news/cat7.xml",
+        "https://www3.nhk.or.jp/rss/news/cat0.xml",  # Main news
+        "https://www3.nhk.or.jp/rss/news/cat1.xml",  # Social news
+    ]
+    
+    secondary_feeds = [
         "https://asia.nikkei.com/rss/feed/nar",
-        "https://news.yahoo.co.jp/rss/topics/business.xml",
     ]
     
     all_news_items = []
     
-    for feed_url in rss_feeds:
+    for feed_url in priority_feeds:
         try:
             feed = feedparser.parse(feed_url)
-            source = "Yahoo!ニュース" if "yahoo" in feed_url else "NHKニュース"
-            if "nikkei" in feed_url:
-                source = "日経ニュース"
+            source = "NHKニュース"
             
-            available_entries = feed.entries[:10] if len(feed.entries) >= 10 else feed.entries
+            available_entries = feed.entries[:8] if len(feed.entries) >= 8 else feed.entries
             
             for entry in available_entries:
                 title = entry.title
                 summary = entry.get('summary', entry.get('description', ''))
+                
+                import re
+                summary = re.sub(r'<[^>]+>', '', summary)
                 
                 if len(summary) > 300:
                     sentences = summary.split('。')
@@ -306,15 +311,55 @@ def fetch_rss_news() -> List[NewsItem]:
                     if truncated and len(truncated) > 100:
                         summary = truncated
                     else:
-                        words = summary[:280].split()
-                        summary = ' '.join(words[:-1]) if len(words) > 1 else summary[:280]
+                        summary = summary[:280]
                 elif len(summary) < 50:
-                    if len(summary) > 260:
-                        summary = summary[:257] + "..."
-                    elif len(summary) < 50:
-                        summary = f"{summary} {title}に関する詳細情報です。"
-                        if len(summary) > 260:
-                            summary = summary[:257] + "..."
+                    summary = f"{title}に関するニュースです。詳細な情報については、元記事をご確認ください。"
+                
+                category = get_news_category(title)
+                
+                news_item = NewsItem(
+                    title=title,
+                    summary=summary,
+                    published=entry.get('published', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                    source=source,
+                    url=entry.get('link', ''),
+                    image_url=get_news_related_image(title),
+                    category=category
+                )
+                all_news_items.append(news_item)
+                
+        except Exception as e:
+            print(f"Error fetching from {feed_url}: {e}")
+            continue
+    
+    for feed_url in secondary_feeds:
+        try:
+            feed = feedparser.parse(feed_url)
+            source = "日経ニュース"
+            
+            available_entries = feed.entries[:5] if len(feed.entries) >= 5 else feed.entries
+            
+            for entry in available_entries:
+                title = entry.title
+                summary = entry.get('summary', entry.get('description', ''))
+                
+                import re
+                summary = re.sub(r'<[^>]+>', '', summary)
+                
+                if len(summary) > 300:
+                    sentences = summary.split('。')
+                    truncated = ""
+                    for sentence in sentences:
+                        if len(truncated + sentence + '。') <= 280:
+                            truncated += sentence + '。'
+                        else:
+                            break
+                    if truncated and len(truncated) > 100:
+                        summary = truncated
+                    else:
+                        summary = summary[:280]
+                elif len(summary) < 50:
+                    summary = f"{title}に関するニュースです。"
                 
                 category = get_news_category(title)
                 
@@ -382,23 +427,35 @@ def generate_overall_summary(news_items: List[NewsItem]) -> str:
 
 @app.get("/api/news", response_model=NewsResponse)
 async def get_news():
-    """Get latest TOP6 news including Mizutani articles"""
+    """Get latest TOP6 news including Mizutani articles with fresh content on each request"""
     try:
         rss_news = fetch_rss_news()
         mizutani_article = generate_mizutani_article()
         
-        if len(rss_news) >= 5:
-            selected_rss = random.sample(rss_news, 5)
+        nhk_news = [item for item in rss_news if item.source == "NHKニュース"]
+        other_news = [item for item in rss_news if item.source != "NHKニュース"]
+        
+        selected_rss = []
+        
+        if len(nhk_news) >= 4:
+            selected_rss.extend(random.sample(nhk_news, 4))
         else:
-            selected_rss = rss_news
+            selected_rss.extend(nhk_news)
+        
+        remaining_slots = 5 - len(selected_rss)
+        if remaining_slots > 0 and other_news:
+            if len(other_news) >= remaining_slots:
+                selected_rss.extend(random.sample(other_news, remaining_slots))
+            else:
+                selected_rss.extend(other_news)
+        
+        if len(selected_rss) < 5 and len(nhk_news) > 4:
+            remaining_slots = 5 - len(selected_rss)
+            remaining_nhk = [item for item in nhk_news if item not in selected_rss]
+            if remaining_nhk:
+                selected_rss.extend(remaining_nhk[:remaining_slots])
         
         selected_news = selected_rss + [mizutani_article]
-        
-        if len(selected_news) < 6 and len(rss_news) > len(selected_rss):
-            remaining_count = 6 - len(selected_news)
-            remaining_rss = [item for item in rss_news if item not in selected_rss]
-            selected_news.extend(remaining_rss[:remaining_count])
-        
         selected_news = selected_news[:6]
         
         overall_summary = generate_overall_summary(selected_news)
