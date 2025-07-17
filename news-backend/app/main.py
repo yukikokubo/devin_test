@@ -141,6 +141,7 @@ def fetch_rss_news() -> List[NewsItem]:
     rss_feeds = [
         "https://www3.nhk.or.jp/rss/news/cat6.xml",
         "https://www3.nhk.or.jp/rss/news/cat7.xml",
+        "https://asia.nikkei.com/rss/feed/nar",
         "https://news.yahoo.co.jp/rss/topics/business.xml",
     ]
     
