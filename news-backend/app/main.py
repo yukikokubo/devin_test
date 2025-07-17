@@ -139,8 +139,9 @@ def generate_mizutani_article() -> NewsItem:
 def fetch_rss_news() -> List[NewsItem]:
     """Fetch news from RSS feeds"""
     rss_feeds = [
-        "https://news.yahoo.co.jp/rss/topics/business.xml",
         "https://www3.nhk.or.jp/rss/news/cat6.xml",
+        "https://www3.nhk.or.jp/rss/news/cat7.xml",
+        "https://news.yahoo.co.jp/rss/topics/business.xml",
     ]
     
     news_items = []
