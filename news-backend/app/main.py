@@ -35,87 +35,99 @@ class NewsResponse(BaseModel):
     overall_summary: str
 
 def get_news_related_image(title: str) -> str:
-    """Get a relevant illustration/image URL based on news title with comprehensive keyword matching"""
+    """Get a relevant illustration/image URL based on news title with enhanced keyword matching"""
     title_lower = title.lower()
     
-    if any(keyword in title_lower for keyword in ['m谷', 'mizutani', 'cro']):
-        if any(keyword in title_lower for keyword in ['ゴシップ', '口論', '騒動', '疑惑', '小競り合い', '問題', '合コン']):
-            return "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop"  # 議論・問題のイラスト
-        elif any(keyword in title_lower for keyword in ['プロレス', '講演', 'スポーツ', 'イベント', '観戦']):
-            return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"  # スポーツイベント
-        elif any(keyword in title_lower for keyword in ['表彰', '振興', '地域', '活動', '貢献']):
-            return "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop"  # 表彰・地域活動
+    if any(keyword in title_lower for keyword in ['m谷']):
+        if any(keyword in title_lower for keyword in ['ゴシップ', '口論', '騒動', '疑惑', '小競り合い', '問題', '合コン', '不倫', 'スキャンダル']):
+            return "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=300&fit=crop"  # 議論・問題
+        elif any(keyword in title_lower for keyword in ['表彰', '振興', '地域', '活動', '貢献', '成果', '新薬', '開発', 'プロジェクト', 'エキスパート']):
+            return "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop"  # 表彰・成功
+        elif any(keyword in title_lower for keyword in ['プロレス', '観戦', 'スポーツ', 'イベント', 'ハンドボール']):
+            return "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop"  # スポーツ
         else:
             return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop"  # ビジネスマン
     
-    elif any(keyword in title_lower for keyword in ['中国', '日本産', '輸入', '許可', '水産物', 'マグロ', 'ホタテ', '貿易', '国際']):
-        return "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop"  # 魚・水産物
+    elif any(keyword in title_lower for keyword in ['中国', '日本産', '水産物', 'マグロ', 'ホタテ', '輸入', '許可', '449種類']):
+        return "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop"  # 魚・水産物
     
-    elif any(keyword in title_lower for keyword in ['広島', '核実験', 'カザフスタン', '知事', '平和', '核', '原爆']):
-        return "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"  # 平和記念碑
+    elif any(keyword in title_lower for keyword in ['広島', '湯崎', 'カザフスタン', '核実験場', '跡地', '訪問', '平和', '核']):
+        return "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"  # 平和記念・核関連
     
-    elif any(keyword in title_lower for keyword in ['タイ', '僧侶', '性的', '金銭', '脅し', '宗教', '社会', '寺院']):
-        return "https://images.unsplash.com/photo-1563789031959-4c02bcb41319?w=400&h=300&fit=crop"  # 寺院・宗教建築
+    elif any(keyword in title_lower for keyword in ['タイ', '僧侶', '性的関係', '金銭', '脅し', '社会衝撃', '宗教', '寺院']):
+        return "https://images.unsplash.com/photo-1563789031959-4c02bcb41319?w=400&h=300&fit=crop"  # 寺院・宗教
     
-    elif any(keyword in title_lower for keyword in ['相撲', '横綱', '大の里', '名古屋場所', '格闘技', '力士']):
-        return "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"  # 相撲・格闘技
+    elif any(keyword in title_lower for keyword in ['プロ野球', '日本ハム', '西武', '連勝', '首位', 'パ・リーグ', '野球']):
+        return "https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=400&h=300&fit=crop"  # 野球
     
-    elif any(keyword in title_lower for keyword in ['クマ', '目撃', 'ゴルフ', '無観客', '野生動物', '宮城', '富谷', '動物']):
-        return "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop"  # ゴルフ場・自然
+    elif any(keyword in title_lower for keyword in ['横綱', '大の里', '相撲', '名古屋場所', '1敗', '力士']):
+        return "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"  # 相撲
     
-    elif any(keyword in title_lower for keyword in ['株価', '株式', '投資', '市場', '日経', 'ダウ', '証券', 'nikkei', '金融']):
-        return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop"  # 株式チャート
-    
-    elif any(keyword in title_lower for keyword in ['マンション', '不動産', '住宅', '建設', '土地', '建物']):
-        return "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop"  # 建物・不動産
-    
-    elif any(keyword in title_lower for keyword in ['セブン', 'コンビニ', '小売', '売上', '消費', '店舗', '販売']):
-        return "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"  # 店舗・小売
-    
-    elif any(keyword in title_lower for keyword in ['自動車', '車', 'トヨタ', 'ホンダ', '日産', 'ev', '電気自動車', '交通']):
-        return "https://images.unsplash.com/photo-1549924231-f129b911e442?w=400&h=300&fit=crop"  # 自動車
-    
-    elif any(keyword in title_lower for keyword in ['ai', '人工知能', 'it', 'テクノロジー', 'デジタル', 'ソフトウェア', 'アプリ', 'システム']):
-        return "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop"  # テクノロジー
-    
-    elif any(keyword in title_lower for keyword in ['銀行', '融資', '金利', '円安', '円高', '為替', '通貨']):
-        return "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop"  # 金融
-    
-    elif any(keyword in title_lower for keyword in ['エネルギー', '電力', '石油', 'ガス', '原油', '再生可能', '発電']):
-        return "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop"  # エネルギー
-    
-    elif any(keyword in title_lower for keyword in ['製造', '工場', '生産', '輸出', '輸入', '産業', '機械']):
-        return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop"  # 製造業
-    
-    elif any(keyword in title_lower for keyword in ['航空', '旅行', '観光', 'ana', 'jal', 'ホテル', '空港']):
-        return "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop"  # 航空・旅行
-    
-    elif any(keyword in title_lower for keyword in ['食品', '農業', '農産物', '食料', 'レストラン', '飲食', '料理']):
-        return "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop"  # 食品・農業
-    
-    elif any(keyword in title_lower for keyword in ['医療', '製薬', '病院', '薬', 'ワクチン', '治療', '健康']):
-        return "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop"  # 医療
-    
-    elif any(keyword in title_lower for keyword in ['政府', '政策', '税', '規制', '法律', '国会', '政治']):
-        return "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop"  # 政府・政策
-    
-    elif any(keyword in title_lower for keyword in ['教育', '学校', '大学', '学生', '授業', '研究']):
-        return "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop"  # 教育
-    
-    elif any(keyword in title_lower for keyword in ['環境', '気候', '温暖化', 'co2', '排出', '自然']):
-        return "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"  # 環境・自然
-    
-    elif any(keyword in title_lower for keyword in ['企業', '会社', 'ビジネス', '業績', '決算', '売上', '経営']):
-        return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop"  # ビジネス
-    
-    elif any(keyword in title_lower for keyword in ['スポーツ', '試合', '選手', '競技', 'オリンピック']):
+    elif any(keyword in title_lower for keyword in ['スポーツ', '試合', '選手', '競技', '勝利', '敗北', '大会', 'オリンピック']):
         return "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=300&fit=crop"  # スポーツ一般
     
-    elif any(keyword in title_lower for keyword in ['映画', '音楽', '芸能', '文化', 'アート', '展示']):
+    elif any(keyword in title_lower for keyword in ['外交', '国際', '大使', '首脳', '会談', '条約', '貿易摩擦']):
+        return "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=300&fit=crop"  # 外交
+    
+    elif any(keyword in title_lower for keyword in ['政治', '政府', '首相', '大臣', '国会', '選挙', '政策', '法案', '議員']):
+        return "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop"  # 政治
+    
+    elif any(keyword in title_lower for keyword in ['事件', '事故', '犯罪', '逮捕', '裁判', '判決', '社会', '衝撃']):
+        return "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=300&fit=crop"  # 社会問題
+    
+    elif any(keyword in title_lower for keyword in ['地震', '震災', '災害', '台風', '津波', '火災']):
+        return "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=400&h=300&fit=crop"  # 災害
+    
+    elif any(keyword in title_lower for keyword in ['科学', '研究', '実験', '発見', '宇宙', '技術']):
+        return "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=300&fit=crop"  # 科学研究
+    
+    elif any(keyword in title_lower for keyword in ['環境', '気候', '温暖化', 'co2', '排出', '自然', '生態']):
+        return "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop"  # 環境
+    
+    elif any(keyword in title_lower for keyword in ['ai', '人工知能', 'it', 'テクノロジー', 'デジタル', 'ソフトウェア', 'アプリ']):
+        return "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop"  # テクノロジー
+    
+    elif any(keyword in title_lower for keyword in ['医療', '病院', '薬', '治療', '患者', '医師', '健康', 'ワクチン']):
+        return "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop"  # 医療
+    
+    elif any(keyword in title_lower for keyword in ['教育', '学校', '大学', '学生', '授業', '研究', '入試', '受験']):
+        return "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400&h=300&fit=crop"  # 教育
+    
+    elif any(keyword in title_lower for keyword in ['交通', '電車', '新幹線', '航空', '道路', 'バス', '運輸', '鉄道']):
+        return "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=300&fit=crop"  # 交通
+    
+    elif any(keyword in title_lower for keyword in ['自動車', '車', 'トヨタ', 'ホンダ', '日産', 'ev', '電気自動車']):
+        return "https://images.unsplash.com/photo-1549924231-f129b911e442?w=400&h=300&fit=crop"  # 自動車
+    
+    elif any(keyword in title_lower for keyword in ['株価', '株式', '投資', '市場', '日経', 'ダウ', '証券', '金融', '銀行']):
+        return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop"  # 金融
+    
+    elif any(keyword in title_lower for keyword in ['企業', '会社', 'ビジネス', '業績', '決算', '売上', '経営', 'cro']):
+        return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop"  # ビジネス
+    
+    elif any(keyword in title_lower for keyword in ['不動産', '住宅', '建設', '建物', 'マンション', '土地']):
+        return "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop"  # 不動産
+    
+    elif any(keyword in title_lower for keyword in ['小売', '店舗', '販売', '消費', 'コンビニ', '売上']):
+        return "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"  # 小売
+    
+    elif any(keyword in title_lower for keyword in ['エネルギー', '電力', '石油', 'ガス', '原油', '発電', '再生可能']):
+        return "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop"  # エネルギー
+    
+    elif any(keyword in title_lower for keyword in ['製造', '工場', '生産', '産業', '機械', '輸出', '輸入']):
+        return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop"  # 製造業
+    
+    elif any(keyword in title_lower for keyword in ['食品', '農業', '農産物', '食料', '料理', '飲食']):
+        return "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop"  # 食品・農業
+    
+    elif any(keyword in title_lower for keyword in ['旅行', '観光', 'ホテル', '空港', 'ana', 'jal']):
+        return "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop"  # 旅行
+    
+    elif any(keyword in title_lower for keyword in ['映画', '音楽', '芸能', 'テレビ', 'ドラマ', 'アニメ', '文化', 'アート']):
         return "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=400&h=300&fit=crop"  # エンターテイメント
     
     else:
-        return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop"  # 一般的な経済ニュース
+        return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop"  # 一般ニュース
 
 def get_news_category(title: str) -> str:
     """Determine news category based on title content"""
