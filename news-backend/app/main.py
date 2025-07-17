@@ -36,18 +36,57 @@ class NewsResponse(BaseModel):
 
 def get_news_related_image(title: str) -> str:
     """Get a relevant image URL based on news title"""
-    if any(keyword in title.lower() for keyword in ['m谷', 'mizutani', 'cro', 'ゴシップ']):
-        return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop"
-    elif any(keyword in title.lower() for keyword in ['株価', '株式', '投資', '市場']):
-        return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop"
-    elif any(keyword in title.lower() for keyword in ['企業', '会社', 'ビジネス']):
-        return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop"
-    elif any(keyword in title.lower() for keyword in ['技術', 'ai', 'テクノロジー', 'it']):
-        return "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop"
-    elif any(keyword in title.lower() for keyword in ['金融', '銀行', '融資']):
-        return "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop"
+    title_lower = title.lower()
+    
+    if any(keyword in title_lower for keyword in ['m谷', 'mizutani', 'cro']):
+        if any(keyword in title_lower for keyword in ['ゴシップ', '口論', '騒動', '疑惑', '小競り合い']):
+            return "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop"  # 議論・問題
+        elif any(keyword in title_lower for keyword in ['プロレス', '講演', 'スポーツ']):
+            return "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop"  # スポーツ・イベント
+        else:
+            return "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop"  # ビジネスマン
+    
+    elif any(keyword in title_lower for keyword in ['株価', '株式', '投資', '市場', '日経', 'ダウ', '証券']):
+        return "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop"  # 株式チャート
+    
+    elif any(keyword in title_lower for keyword in ['マンション', '不動産', '住宅', '建設', '土地']):
+        return "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop"  # 建物・不動産
+    
+    elif any(keyword in title_lower for keyword in ['セブン', 'コンビニ', '小売', '売上', '消費', '店舗']):
+        return "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop"  # 店舗・小売
+    
+    elif any(keyword in title_lower for keyword in ['自動車', '車', 'トヨタ', 'ホンダ', '日産', 'ev', '電気自動車']):
+        return "https://images.unsplash.com/photo-1549924231-f129b911e442?w=400&h=300&fit=crop"  # 自動車
+    
+    elif any(keyword in title_lower for keyword in ['ai', '人工知能', 'it', 'テクノロジー', 'デジタル', 'ソフトウェア', 'アプリ']):
+        return "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop"  # テクノロジー
+    
+    elif any(keyword in title_lower for keyword in ['金融', '銀行', '融資', '金利', '円安', '円高', '為替']):
+        return "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop"  # 金融
+    
+    elif any(keyword in title_lower for keyword in ['エネルギー', '電力', '石油', 'ガス', '原油', '再生可能']):
+        return "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop"  # エネルギー
+    
+    elif any(keyword in title_lower for keyword in ['製造', '工場', '生産', '輸出', '輸入', '貿易']):
+        return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop"  # 製造業
+    
+    elif any(keyword in title_lower for keyword in ['航空', '旅行', '観光', 'ana', 'jal', 'ホテル']):
+        return "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=300&fit=crop"  # 航空・旅行
+    
+    elif any(keyword in title_lower for keyword in ['食品', '農業', '農産物', '食料', 'レストラン', '飲食']):
+        return "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop"  # 食品・農業
+    
+    elif any(keyword in title_lower for keyword in ['医療', '製薬', '病院', '薬', 'ワクチン', '治療']):
+        return "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop"  # 医療
+    
+    elif any(keyword in title_lower for keyword in ['政府', '政策', '税', '規制', '法律', '国会']):
+        return "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&h=300&fit=crop"  # 政府・政策
+    
+    elif any(keyword in title_lower for keyword in ['企業', '会社', 'ビジネス', '業績', '決算', '売上']):
+        return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=300&fit=crop"  # ビジネス
+    
     else:
-        return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop"
+        return "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop"  # 一般的な経済ニュース
 
 def generate_mizutani_article() -> NewsItem:
     """Generate a fictional article about M谷"""
