@@ -271,154 +271,157 @@ def generate_mizutani_article() -> NewsItem:
         category=category
     )
 
-def fetch_rss_news() -> List[NewsItem]:
-    """Fetch news from RSS feeds with NHK news prioritized"""
-    priority_feeds = [
-        "https://www3.nhk.or.jp/rss/news/cat6.xml",
-        "https://www3.nhk.or.jp/rss/news/cat7.xml",
-        "https://www3.nhk.or.jp/rss/news/cat0.xml",  # Main news
-        "https://www3.nhk.or.jp/rss/news/cat1.xml",  # Social news
+def generate_fictional_news() -> List[NewsItem]:
+    """Generate fictional news articles with diverse categories and content"""
+    
+    fictional_news_templates = [
+        {
+            "title": "東京証券取引所、新システム導入で取引効率が30%向上",
+            "summary": "東京証券取引所は本日、新しい取引システム「ARROWHEAD-X」の導入を発表しました。このシステムにより、取引処理速度が従来比30%向上し、投資家の利便性が大幅に改善される見込みです。同取引所の田中社長は「デジタル化の推進により、より透明で効率的な市場を提供できる」と述べています。新システムは来月から段階的に運用開始予定で、年内には全面移行を完了する計画です。",
+            "category": "経済",
+            "source": "経済新聞"
+        },
+        {
+            "title": "大手コンビニチェーン、AI活用で食品ロス50%削減を達成",
+            "summary": "セブンイレブンジャパンは、AI技術を活用した需要予測システムにより、食品ロスを前年比50%削減したと発表しました。このシステムは天候、イベント、地域特性などのデータを分析し、各店舗の最適な発注量を算出します。同社の佐藤取締役は「持続可能な社会の実現に向けた重要な一歩」と評価しています。今後は他の商品カテゴリーにも展開し、さらなる効率化を目指すとしています。",
+            "category": "経済",
+            "source": "流通ニュース"
+        },
+        {
+            "title": "プロ野球、新人王候補の山田選手が月間MVP受賞",
+            "summary": "プロ野球パ・リーグの新人王候補として注目される楽天の山田翔太選手（22）が、7月度の月間MVPを受賞しました。打率.385、15本塁打、42打点の好成績を記録し、チームの首位争いに大きく貢献しています。山田選手は「チームメイトのサポートのおかげ。優勝に向けて全力で頑張りたい」とコメント。球団関係者は「将来の日本代表候補」と期待を寄せています。",
+            "category": "スポーツ",
+            "source": "スポーツ報知"
+        },
+        {
+            "title": "サッカーJ1、FC東京が4連勝で首位浮上",
+            "summary": "サッカーJ1リーグで、FC東京が横浜F・マリノスを2-1で破り、4連勝を達成しました。この勝利により勝ち点を65に伸ばし、首位に浮上。エース森田選手の2ゴールが勝利の決め手となりました。長谷川監督は「選手たちの献身的なプレーが実を結んだ。残り試合も気を抜かずに戦いたい」と語っています。次節は川崎フロンターレとのアウェー戦が予定されています。",
+            "category": "スポーツ",
+            "source": "サッカーマガジン"
+        },
+        {
+            "title": "政府、デジタル庁の予算を来年度20%増額へ",
+            "summary": "政府は来年度予算案で、デジタル庁の予算を今年度比20%増の1200億円とする方針を固めました。行政手続きのデジタル化推進や、サイバーセキュリティ強化が主な用途となります。河野デジタル大臣は「国民の利便性向上と行政効率化を両立させる」と説明。野党からは「予算の使途を明確にすべき」との声も上がっており、国会での議論が注目されます。",
+            "category": "政治",
+            "source": "政治新聞"
+        },
+        {
+            "title": "地方創生担当大臣、過疎地域支援策を発表",
+            "summary": "坂本地方創生担当大臣は、過疎地域の活性化を目的とした新たな支援策を発表しました。移住促進のための住宅補助金拡充や、地域企業への税制優遇措置が柱となります。対象は全国約800の過疎自治体で、総額500億円の予算を投じる予定です。大臣は「地方の魅力を活かした持続可能な地域づくりを支援する」と述べ、来年4月からの実施を目指すとしています。",
+            "category": "政治",
+            "source": "地方行政"
+        },
+        {
+            "title": "日韓首脳会談、経済協力強化で合意",
+            "summary": "岸田首相と韓国の尹大統領による日韓首脳会談が東京で開催され、両国の経済協力強化で合意しました。半導体分野での技術協力や、観光業の相互促進が主な内容です。岸田首相は「両国の未来志向的な関係構築に向けた重要な一歩」と評価。尹大統領も「経済分野での協力が両国民の利益につながる」と述べました。次回会談は来年春にソウルで開催予定です。",
+            "category": "国際",
+            "source": "外交通信"
+        },
+        {
+            "title": "ASEAN諸国、気候変動対策で新たな枠組み設立",
+            "summary": "ASEAN（東南アジア諸国連合）は、気候変動対策を強化するための新たな枠組み「ASEAN気候行動パートナーシップ」を設立すると発表しました。再生可能エネルギーの普及促進や、森林保護活動の連携強化が主な目的です。日本も技術支援や資金協力で参画する予定で、外務省は「地域の持続可能な発展に貢献したい」としています。来月バンコクで設立記念会議が開催されます。",
+            "category": "国際",
+            "source": "国際情報"
+        },
+        {
+            "title": "全国の小学校、プログラミング教育の成果が向上",
+            "summary": "文部科学省の調査によると、全国の小学校でのプログラミング教育の成果が着実に向上していることが分かりました。論理的思考力を測るテストで、導入前と比較して平均点が15%上昇。教師の指導力向上や教材の充実が要因とされています。同省の担当者は「デジタル社会に対応できる人材育成が進んでいる」と評価。今後は中学校での発展的な学習内容の検討も進める方針です。",
+            "category": "社会",
+            "source": "教育新聞"
+        },
+        {
+            "title": "高齢者向けデジタル講座、全国で参加者急増",
+            "summary": "総務省が推進する高齢者向けデジタル講座の参加者が、前年比2倍の20万人に達したことが分かりました。スマートフォンの基本操作やオンライン決済の方法などを学ぶ内容で、参加者の満足度も90%を超えています。講座を受講した田中さん（72）は「孫とビデオ通話ができるようになって嬉しい」と話しています。同省は来年度も講座を継続し、デジタルデバイドの解消を目指すとしています。",
+            "category": "社会",
+            "source": "社会福祉"
+        },
+        {
+            "title": "日本企業、量子コンピューター実用化で世界初の成果",
+            "summary": "理化学研究所と富士通の共同研究チームが、量子コンピューターの実用化に向けた世界初の成果を発表しました。従来の計算機では数年かかる複雑な最適化問題を、わずか数分で解決することに成功。物流や金融分野での応用が期待されています。研究チームリーダーの中村教授は「日本の量子技術が世界をリードする証明」と述べています。来年には企業向けサービスの提供開始を予定しています。",
+            "category": "テクノロジー",
+            "source": "科学技術"
+        },
+        {
+            "title": "自動運転バス、地方都市で本格運用開始",
+            "summary": "群馬県前橋市で、自動運転バスの本格運用が開始されました。AI技術により安全性を確保しながら、運転手不足の解決を目指します。初日は市民約200人が試乗し、「スムーズで安心」との声が多く聞かれました。前橋市の山本市長は「地方交通の新たなモデルケースとなる」と期待を表明。他の地方自治体からも導入に向けた問い合わせが相次いでいるということです。",
+            "category": "テクノロジー",
+            "source": "交通技術"
+        },
+        {
+            "title": "新型がん治療薬、臨床試験で画期的な効果を確認",
+            "summary": "国立がん研究センターは、新型がん治療薬「NK-2024」の臨床試験で画期的な効果を確認したと発表しました。従来治療が困難だった進行がんに対し、腫瘍縮小率80%を達成。副作用も従来薬より大幅に軽減されています。研究責任者の佐藤医師は「がん治療の新たな希望となる」と述べています。厚生労働省への承認申請を来年初頭に行い、2026年の実用化を目指すとしています。",
+            "category": "医療",
+            "source": "医学ジャーナル"
+        },
+        {
+            "title": "AI診断システム、早期認知症発見率を90%に向上",
+            "summary": "東京大学医学部の研究チームが開発したAI診断システムが、早期認知症の発見率を90%まで向上させることに成功しました。MRI画像と認知機能テストのデータを組み合わせて分析し、従来の診断法より2年早い発見が可能です。研究チームの田中教授は「早期発見により治療効果が大幅に改善される」と説明。全国の医療機関での導入に向けた準備が進められています。",
+            "category": "医療",
+            "source": "医療技術"
+        },
+        {
+            "title": "人気アニメ映画、興行収入100億円突破",
+            "summary": "今年公開された人気アニメ映画「星空の約束」が、公開から2ヶ月で興行収入100億円を突破しました。美しい映像と感動的なストーリーが話題となり、幅広い年齢層から支持を集めています。監督の鈴木氏は「多くの方に愛される作品になって感謝している」とコメント。海外での配給も決定しており、世界的なヒットが期待されています。関連グッズの売上も好調で、経済効果は200億円を超える見込みです。",
+            "category": "エンタメ",
+            "source": "エンタメ情報"
+        },
+        {
+            "title": "音楽フェス、3年ぶりの完全開催で20万人が来場",
+            "summary": "千葉県で開催された大型音楽フェスティバル「サマーソニック2025」が、3年ぶりの完全開催となり、3日間で延べ20万人が来場しました。国内外の人気アーティスト50組が出演し、会場は熱気に包まれました。主催者は「音楽の力で人々を繋げることができた」と振り返っています。来場者からは「久しぶりの生音楽に感動した」との声が多く聞かれ、来年の開催も決定しています。",
+            "category": "エンタメ",
+            "source": "音楽情報"
+        }
     ]
     
-    secondary_feeds = [
-        "https://asia.nikkei.com/rss/feed/nar",
-    ]
+    selected_templates = random.sample(fictional_news_templates, min(15, len(fictional_news_templates)))
     
     all_news_items = []
     
-    for feed_url in priority_feeds:
-        try:
-            feed = feedparser.parse(feed_url)
-            source = "NHKニュース"
-            
-            available_entries = feed.entries[:8] if len(feed.entries) >= 8 else feed.entries
-            
-            for entry in available_entries:
-                title = entry.title
-                summary = entry.get('summary', entry.get('description', ''))
-                
-                import re
-                summary = re.sub(r'<[^>]+>', '', summary)
-                
-                if len(summary) > 300:
-                    sentences = summary.split('。')
-                    truncated = ""
-                    for sentence in sentences:
-                        if len(truncated + sentence + '。') <= 280:
-                            truncated += sentence + '。'
-                        else:
-                            break
-                    if truncated and len(truncated) > 100:
-                        summary = truncated
-                    else:
-                        summary = summary[:280]
-                elif len(summary) < 50:
-                    summary = f"{title}に関するニュースです。詳細な情報については、元記事をご確認ください。"
-                
-                category = get_news_category(title)
-                
-                news_item = NewsItem(
-                    title=title,
-                    summary=summary,
-                    published=entry.get('published', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-                    source=source,
-                    url=entry.get('link', ''),
-                    image_url=get_news_related_image(title),
-                    category=category
-                )
-                all_news_items.append(news_item)
-                
-        except Exception as e:
-            print(f"Error fetching from {feed_url}: {e}")
-            continue
-    
-    for feed_url in secondary_feeds:
-        try:
-            feed = feedparser.parse(feed_url)
-            source = "日経ニュース"
-            
-            available_entries = feed.entries[:5] if len(feed.entries) >= 5 else feed.entries
-            
-            for entry in available_entries:
-                title = entry.title
-                summary = entry.get('summary', entry.get('description', ''))
-                
-                import re
-                summary = re.sub(r'<[^>]+>', '', summary)
-                
-                if len(summary) > 300:
-                    sentences = summary.split('。')
-                    truncated = ""
-                    for sentence in sentences:
-                        if len(truncated + sentence + '。') <= 280:
-                            truncated += sentence + '。'
-                        else:
-                            break
-                    if truncated and len(truncated) > 100:
-                        summary = truncated
-                    else:
-                        summary = summary[:280]
-                elif len(summary) < 50:
-                    summary = f"{title}に関するニュースです。"
-                
-                category = get_news_category(title)
-                
-                news_item = NewsItem(
-                    title=title,
-                    summary=summary,
-                    published=entry.get('published', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-                    source=source,
-                    url=entry.get('link', ''),
-                    image_url=get_news_related_image(title),
-                    category=category
-                )
-                all_news_items.append(news_item)
-                
-        except Exception as e:
-            print(f"Error fetching from {feed_url}: {e}")
-            continue
+    for template in selected_templates:
+        news_item = NewsItem(
+            title=template["title"],
+            summary=template["summary"],
+            published=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            source=template["source"],
+            url="https://example.com/fictional-news",
+            image_url=get_news_related_image(template["title"]),
+            category=template["category"]
+        )
+        all_news_items.append(news_item)
     
     random.shuffle(all_news_items)
     return all_news_items
 
 def generate_overall_summary(news_items: List[NewsItem]) -> str:
-    """Generate a 500-character overall summary based on actual collected news"""
+    """Generate a 500-character overall summary based on fictional news"""
     sources = list(set([item.source for item in news_items]))
     mizutani_count = len([item for item in news_items if "M谷" in item.title])
-    real_news = [item for item in news_items if "M谷" not in item.title]
+    fictional_news = [item for item in news_items if "M谷" not in item.title]
     
-    summary = f"本日収集した{len(news_items)}件のニュースをお届けします。"
+    summary = f"本日お届けする{len(news_items)}件のニュースをご紹介します。"
     
-    if real_news:
-        topics = []
-        for item in real_news[:3]:  # Use first 3 real news items
-            if any(keyword in item.title for keyword in ['セブン', 'コンビニ', '小売']):
-                topics.append("小売業界")
-            elif any(keyword in item.title for keyword in ['マンション', '不動産']):
-                topics.append("不動産市場")
-            elif any(keyword in item.title for keyword in ['株価', '投資']):
-                topics.append("株式市場")
-            elif any(keyword in item.title for keyword in ['企業', '業績']):
-                topics.append("企業業績")
-            elif any(keyword in item.title for keyword in ['中国', '輸入', '水産物', '貿易']):
-                topics.append("国際貿易")
-            elif any(keyword in item.title for keyword in ['広島', '核', '平和']):
-                topics.append("平和・核問題")
-            elif any(keyword in item.title for keyword in ['相撲', 'スポーツ', '横綱']):
-                topics.append("スポーツ")
-            elif any(keyword in item.title for keyword in ['宗教', '僧侶', '社会']):
-                topics.append("社会問題")
-            else:
-                topics.append("経済動向")
+    if fictional_news:
+        categories = list(set([item.category for item in fictional_news]))
+        if len(categories) >= 2:
+            summary += f"主要分野は{categories[0]}、{categories[1]}などとなっています。"
+        elif len(categories) == 1:
+            summary += f"主要分野は{categories[0]}となっています。"
         
-        if topics:
-            unique_topics = list(set(topics))
-            summary += f"主要トピックは{', '.join(unique_topics[:2])}などです。"
+        for item in fictional_news[:2]:
+            if "AI" in item.title or "デジタル" in item.title:
+                summary += "テクノロジー分野での革新的な進展、"
+                break
+            elif "経済" in item.category or "企業" in item.title:
+                summary += "経済界での注目すべき動き、"
+                break
+            elif "スポーツ" in item.category:
+                summary += "スポーツ界での話題、"
+                break
     
     if mizutani_count > 0:
-        summary += f"また、注目の人物M谷氏の動向も含まれています。"
+        summary += "注目のM谷氏に関する最新情報も含まれています。"
     
-    summary += f"情報源は{', '.join(sources)}などの信頼できるメディアからお届けしています。"
+    summary += f"多様な分野の最新動向をお伝えします。"
     
     if len(summary) > 500:
         summary = summary[:497] + "..."
@@ -429,33 +432,15 @@ def generate_overall_summary(news_items: List[NewsItem]) -> str:
 async def get_news():
     """Get latest TOP6 news including Mizutani articles with fresh content on each request"""
     try:
-        rss_news = fetch_rss_news()
+        fictional_news = generate_fictional_news()
         mizutani_article = generate_mizutani_article()
         
-        nhk_news = [item for item in rss_news if item.source == "NHKニュース"]
-        other_news = [item for item in rss_news if item.source != "NHKニュース"]
-        
-        selected_rss = []
-        
-        if len(nhk_news) >= 4:
-            selected_rss.extend(random.sample(nhk_news, 4))
+        if len(fictional_news) >= 5:
+            selected_fictional = random.sample(fictional_news, 5)
         else:
-            selected_rss.extend(nhk_news)
+            selected_fictional = fictional_news
         
-        remaining_slots = 5 - len(selected_rss)
-        if remaining_slots > 0 and other_news:
-            if len(other_news) >= remaining_slots:
-                selected_rss.extend(random.sample(other_news, remaining_slots))
-            else:
-                selected_rss.extend(other_news)
-        
-        if len(selected_rss) < 5 and len(nhk_news) > 4:
-            remaining_slots = 5 - len(selected_rss)
-            remaining_nhk = [item for item in nhk_news if item not in selected_rss]
-            if remaining_nhk:
-                selected_rss.extend(remaining_nhk[:remaining_slots])
-        
-        selected_news = selected_rss + [mizutani_article]
+        selected_news = selected_fictional + [mizutani_article]
         selected_news = selected_news[:6]
         
         overall_summary = generate_overall_summary(selected_news)
