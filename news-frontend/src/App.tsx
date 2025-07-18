@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { RefreshCw, Clock, ExternalLink } from 'lucide-react'
+import { RefreshCw, Clock } from 'lucide-react'
 import './App.css'
 
 interface NewsItem {
@@ -138,17 +138,6 @@ function App() {
                   <span className="text-xs text-gray-500">
                     {new Date(item.published).toLocaleDateString('ja-JP')}
                   </span>
-                  {item.url && item.url !== 'https://example.com/mizutani-news' && item.url !== 'https://example.com/economic-news' && (
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                      <span>詳細を見る</span>
-                      <ExternalLink className="w-3 h-3 ml-1" />
-                    </a>
-                  )}
                 </div>
               </div>
             </article>
